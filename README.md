@@ -3,6 +3,8 @@ ASCOM Compliant Dome driver which performs HTTP Get requests on DOME events
 
 Looking for installable version?  Please see available [releases](https://github.com/linuxkidd/ascom.domelauncher/releases).
 
+![DomeLauncher Setup Dialog](https://raw.githubusercontent.com/linuxkidd/ascom.domelauncher/master/images/DomeLauncher_Setup.jpg)
+
 ## Requirements
 * [ASCOM 6.4SP1](https://github.com/ASCOMInitiative/ASCOMPlatform/releases) or newer
 * [Microsoft .NET 4.7.1](https://www.microsoft.com/en-us/download/details.aspx?id=56115) or newer
