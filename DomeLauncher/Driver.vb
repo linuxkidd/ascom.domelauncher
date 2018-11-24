@@ -4,7 +4,7 @@
 '
 ' Description:	Perform HTTP Get requests on Dome Open / Close events
 '
-' Implements:	ASCOM Dome interface version: 1.0
+' Implements:	ASCOM Dome interface version: 1.2.0
 ' Author:		(MJK) Michael J. Kidd <linuxkidd@gmail.com>
 '
 ' Edit Log:
@@ -13,6 +13,7 @@
 ' -----------	---	-----	-------------------------------------------------------
 ' 2018-11-23	MJK	1.0.0	Initial edit, from Dome template
 ' 2018-11-24    MJK 1.1.0   Added support for HTTP Authentication
+' 2018-11-24    MJK 1.2.0   Refactored Web request code, added definitive state on close fail
 ' ---------------------------------------------------------------------------------
 '
 #Const Device = "Dome"
@@ -324,6 +325,7 @@ Public Class Dome
             domeShutterState = False
         Else
             TL.LogMessage("CloseShutter", "Shutter URL Fetch failed: " & rc)
+            domeShutterState = True
         End If
     End Sub
 
@@ -459,6 +461,7 @@ Public Class Dome
     Private Function CallURL(ByVal MyURL As String) As UInt16
         TL.LogMessage("CallURL", "Start calling URL: " & MyURL)
         Dim request As WebRequest = WebRequest.Create(MyURL)
+        Dim response As WebResponse
         If AuthRequired Then
             TL.LogMessage("CallURL", "Using supplied Username and Password")
             request.Credentials = New NetworkCredential(URLUsername, URLPassword)
@@ -466,10 +469,14 @@ Public Class Dome
             TL.LogMessage("CallURL", "Using default credential cache")
             request.Credentials = CredentialCache.DefaultCredentials()
         End If
-        Dim response As WebResponse = request.GetResponse()
-        Dim responseCode As UInt16 = CType(response, HttpWebResponse).StatusCode
-        TL.LogMessage("CallURL", "End calling URL: " & responseCode)
-        Return responseCode
+        Try
+            response = request.GetResponse()
+        Catch ex As WebException
+            response = ex.Response
+        End Try
+        Dim ResponseCode As UInt16 = CType(response, HttpWebResponse).StatusCode
+        TL.LogMessage("CallURL", "End calling URL: " & ResponseCode)
+        Return ResponseCode
     End Function
     ''' <summary>
     ''' Read the device configuration from the ASCOM Profile store

@@ -5,13 +5,13 @@
 [Setup]
 AppID={{31b80902-9c9c-4aa6-87ef-78822a469e3b}
 AppName=ASCOM Dome Launcher Dome Driver
-AppVerName=ASCOM Dome Launcher Dome Driver 1.1
+AppVerName=ASCOM Dome Launcher Dome Driver 1.2
 AppVersion=1.1
 AppPublisher=Michael J. Kidd <linuxkidd@gmail.com>
 AppPublisherURL=mailto:linuxkidd@gmail.com
 AppSupportURL=http://tech.groups.yahoo.com/group/ASCOM-Talk/
 AppUpdatesURL=http://ascom-standards.org/
-VersionInfoVersion=1.1.0
+VersionInfoVersion=1.2.0
 MinVersion=0,5.0.2195sp4
 DefaultDirName="{cf}\ASCOM\Dome"
 DisableDirPage=yes
@@ -38,11 +38,11 @@ Name: "{cf}\ASCOM\Uninstall\Dome\Dome Launcher"
 Name: source; Description: Install the Source files; Flags: unchecked
 
 [Files]
-Source: "C:\Users\linux\source\repos\DomeLauncher\DomeLauncher\bin\Release\ASCOM.DomeLauncher.Dome.dll"; DestDir: "{app}"
+Source: "C:\Users\linux\source\repos\ascom.domelauncher\DomeLauncher\bin\Release\ASCOM.DomeLauncher.Dome.dll"; DestDir: "{app}"
 ; Require a read-me HTML to appear after installation, maybe driver's Help doc
-Source: "C:\Users\linux\source\repos\DomeLauncher\DomeLauncher\ReadMe.htm"; DestDir: "{app}"; Flags: isreadme
+Source: "C:\Users\linux\source\repos\ascom.domelauncher\DomeLauncher\ReadMe.htm"; DestDir: "{app}"; Flags: isreadme
 ; Optional source files (COM and .NET aware)
-Source: "C:\Users\linux\source\repos\DomeLauncher\DomeLauncher\*"; Excludes: *.zip,*.exe,*.dll, \bin\*, \obj\*; DestDir: "{app}\Source\Dome Launcher Driver"; Tasks: source; Flags: recursesubdirs
+Source: "C:\Users\linux\source\repos\ascom.domelauncher\DomeLauncher\*"; Excludes: *.zip,*.exe,*.dll, \bin\*, \obj\*; DestDir: "{app}\Source\Dome Launcher Driver"; Tasks: source; Flags: recursesubdirs
 ; TODO: Add other files needed by your driver here (add subfolders above)
 
 
