@@ -5,13 +5,13 @@
 [Setup]
 AppID={{31b80902-9c9c-4aa6-87ef-78822a469e3b}
 AppName=ASCOM Dome Launcher Dome Driver
-AppVerName=ASCOM Dome Launcher Dome Driver 1.2
-AppVersion=1.1
+AppVerName=ASCOM Dome Launcher Dome Driver 1.3
+AppVersion=1.3
 AppPublisher=Michael J. Kidd <linuxkidd@gmail.com>
 AppPublisherURL=mailto:linuxkidd@gmail.com
 AppSupportURL=http://tech.groups.yahoo.com/group/ASCOM-Talk/
 AppUpdatesURL=http://ascom-standards.org/
-VersionInfoVersion=1.2.0
+VersionInfoVersion=1.3.0
 MinVersion=0,5.0.2195sp4
 DefaultDirName="{cf}\ASCOM\Dome"
 DisableDirPage=yes

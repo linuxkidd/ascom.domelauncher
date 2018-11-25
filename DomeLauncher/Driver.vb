@@ -4,7 +4,7 @@
 '
 ' Description:	Perform HTTP Get requests on Dome Open / Close events
 '
-' Implements:	ASCOM Dome interface version: 1.2.0
+' Implements:	ASCOM Dome interface version: 1.3.0
 ' Author:		(MJK) Michael J. Kidd <linuxkidd@gmail.com>
 '
 ' Edit Log:
@@ -14,6 +14,7 @@
 ' 2018-11-23	MJK	1.0.0	Initial edit, from Dome template
 ' 2018-11-24    MJK 1.1.0   Added support for HTTP Authentication
 ' 2018-11-24    MJK 1.2.0   Refactored Web request code, added definitive state on close fail
+' 2018-11-24    MJK 1.3.0   Force http auth header in initial request to overcome Digital Logger web switch lack of 401 response
 ' ---------------------------------------------------------------------------------
 '
 #Const Device = "Dome"
@@ -464,7 +465,10 @@ Public Class Dome
         Dim response As WebResponse
         If AuthRequired Then
             TL.LogMessage("CallURL", "Using supplied Username and Password")
-            request.Credentials = New NetworkCredential(URLUsername, URLPassword)
+            Dim data As Byte() = System.Text.ASCIIEncoding.ASCII.GetBytes(URLUsername & ":" & URLPassword)
+            Dim authhash As String = Convert.ToBase64String(data)
+            request.Headers("Authorization") = "Basic " & authhash
+            ' request.Credentials = New NetworkCredential(URLUsername, URLPassword)
         Else
             TL.LogMessage("CallURL", "Using default credential cache")
             request.Credentials = CredentialCache.DefaultCredentials()
