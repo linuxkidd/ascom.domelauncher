@@ -44,30 +44,21 @@ Public Class Dome
     Friend Shared driverID As String = "ASCOM.DomeLauncher.Dome"
     Private Shared driverDescription As String = "DomeLauncher Dome"
 
-    Friend Shared traceStateProfileName As String = "Trace Level"
-    Friend Shared traceStateDefault As String = "False"
-    Friend Shared traceState As Boolean = False
+    Public Class SettingStr
+        Public Property Name As String
+        Public Property DefaultVal As String
+        Public Property Value As String
+        Public Property Type As String
+    End Class
 
-    Friend Shared ShutterOpenURLProfileName As String = "Shutter Open URL"
-    Friend Shared ShutterOpenURLDefault As String = "http://192.168.1.100/OpenShutter"
-    Friend Shared ShutterOpenURL As String
-
-    Friend Shared ShutterCloseURLProfileName As String = "Shutter Close URL"
-    Friend Shared ShutterCloseURLDefault As String = "http://192.168.1.100/CloseShutter"
-    Friend Shared ShutterCloseURL As String
-
-    Friend Shared AuthRequiredProfileName As String = "Authentication Required"
-    Friend Shared AuthRequiredDefault As String = "False"
-    Friend Shared AuthRequired As Boolean = False
-
-    Friend Shared URLUsernameProfileName As String = "URL Username"
-    Friend Shared URLUsernameDefault As String = ""
-    Friend Shared URLUsername As String
-
-    Friend Shared URLPasswordProfileName As String = "URL Password"
-    Friend Shared URLPasswordDefault As String = ""
-    Friend Shared URLPassword As String
-
+    Friend Shared allSettings As Dictionary(Of String, SettingStr) = New Dictionary(Of String, SettingStr) From {
+        {"traceState", New SettingStr With {.Name = "Trace Level", .DefaultVal = "False", .Value = "False", .Type = "checkbox"}},
+        {"ShutterOpenURL", New SettingStr With {.Name = "Shutter Open URL", .DefaultVal = "http://192.168.1.10/Open", .Value = "", .Type = "text"}},
+        {"ShutterCloseURL", New SettingStr With {.Name = "Shutter Close URL", .DefaultVal = "http://192.168.1.10/Close", .Value = "", .Type = "text"}},
+        {"AuthRequred", New SettingStr With {.Name = "Authentication Required", .DefaultVal = "False", .Value = "False", .Type = "checkbox"}},
+        {"AuthUsername", New SettingStr With {.Name = "Username", .DefaultVal = "", .Value = "", .Type = "text"}},
+        {"AuthPassword", New SettingStr With {.Name = "Password", .DefaultVal = "", .Value = "", .Type = "password"}}
+    }
 
     Private connectedState As Boolean = False ' Private variable to hold the connected state
     Private utilities As Util ' Private variable to hold an ASCOM Utilities object
@@ -80,7 +71,7 @@ Public Class Dome
     Public Sub New()
         ReadProfile() ' Read device configuration from the ASCOM Profile store
         TL = New TraceLogger("", "DomeLauncher")
-        TL.Enabled = traceState
+        TL.Enabled = Convert.ToBoolean(allSettings("traceState").Value)
         TL.LogMessage("Dome", "Starting initialisation")
         connectedState = False ' Initialise connected to false
         utilities = New Util() ' Initialise util object
@@ -320,7 +311,7 @@ Public Class Dome
 
     Public Sub CloseShutter() Implements IDomeV2.CloseShutter
         TL.LogMessage("CloseShutter", "Closing Shutter")
-        Dim rc As UInt16 = CallURL(ShutterCloseURL)
+        Dim rc As UInt16 = CallURL(allSettings("ShutterCloseURL").Value)
         If (rc >= 200 And rc < 300) Then
             TL.LogMessage("CloseShutter", "Shutter has been Closed")
             domeShutterState = False
@@ -337,7 +328,7 @@ Public Class Dome
 
     Public Sub OpenShutter() Implements IDomeV2.OpenShutter
         TL.LogMessage("OpenShutter", "Opening Shutter")
-        Dim rc As UInt16 = CallURL(ShutterOpenURL)
+        Dim rc As UInt16 = CallURL(allSettings("ShutterOpenURL").Value)
         If (rc >= 200 And rc < 300) Then
             TL.LogMessage("OpenShutter", "Shutter has been opened")
             domeShutterState = True
@@ -463,9 +454,9 @@ Public Class Dome
         TL.LogMessage("CallURL", "Start calling URL: " & MyURL)
         Dim request As WebRequest = WebRequest.Create(MyURL)
         Dim response As WebResponse
-        If AuthRequired Then
+        If Convert.ToBoolean(allSettings("AuthRequired").Value) Then
             TL.LogMessage("CallURL", "Using supplied Username and Password")
-            Dim data As Byte() = System.Text.ASCIIEncoding.ASCII.GetBytes(URLUsername & ":" & URLPassword)
+            Dim data As Byte() = System.Text.ASCIIEncoding.ASCII.GetBytes(allSettings("AuthUsername").Value & ":" & allSettings("AuthPassword").Value)
             Dim authhash As String = Convert.ToBase64String(data)
             request.Headers("Authorization") = "Basic " & authhash
             ' request.Credentials = New NetworkCredential(URLUsername, URLPassword)
@@ -488,12 +479,9 @@ Public Class Dome
     Friend Sub ReadProfile()
         Using driverProfile As New Profile()
             driverProfile.DeviceType = "Dome"
-            traceState = Convert.ToBoolean(driverProfile.GetValue(driverID, traceStateProfileName, String.Empty, traceStateDefault))
-            ShutterOpenURL = driverProfile.GetValue(driverID, ShutterOpenURLProfileName, String.Empty, ShutterOpenURLDefault)
-            ShutterCloseURL = driverProfile.GetValue(driverID, ShutterCloseURLProfileName, String.Empty, ShutterCloseURLDefault)
-            AuthRequired = Convert.ToBoolean(driverProfile.GetValue(driverID, AuthRequiredProfileName, String.Empty, AuthRequiredDefault))
-            URLUsername = driverProfile.GetValue(driverID, URLUsernameProfileName, String.Empty, URLUsernameDefault)
-            URLPassword = driverProfile.GetValue(driverID, URLPasswordProfileName, String.Empty, URLPasswordDefault)
+            For Each mySetting As String In allSettings.Keys
+                allSettings(mySetting).Value = driverProfile.GetValue(driverID, mySetting, String.Empty, allSettings(mySetting).DefaultVal)
+            Next
         End Using
     End Sub
 
@@ -503,14 +491,10 @@ Public Class Dome
     Friend Sub WriteProfile()
         Using driverProfile As New Profile()
             driverProfile.DeviceType = "Dome"
-            driverProfile.WriteValue(driverID, traceStateProfileName, traceState.ToString())
-            driverProfile.WriteValue(driverID, ShutterOpenURLProfileName, ShutterOpenURL.ToString())
-            driverProfile.WriteValue(driverID, ShutterCloseURLProfileName, ShutterCloseURL.ToString())
-            driverProfile.WriteValue(driverID, AuthRequiredProfileName, AuthRequired.ToString())
-            driverProfile.WriteValue(driverID, URLUsernameProfileName, URLUsername.ToString())
-            driverProfile.WriteValue(driverID, URLPasswordProfileName, URLPassword.ToString())
+            For Each mySetting As String In allSettings.Keys
+                driverProfile.WriteValue(driverID, mySetting, allSettings(mySetting).Value)
+            Next
         End Using
-
     End Sub
 
 #End Region
