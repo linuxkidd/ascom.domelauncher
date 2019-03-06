@@ -55,7 +55,7 @@ Public Class Dome
         {"traceState", New SettingStr With {.Name = "Trace Level", .DefaultVal = "False", .Value = "False", .Type = "checkbox"}},
         {"ShutterOpenURL", New SettingStr With {.Name = "Shutter Open URL", .DefaultVal = "http://192.168.1.10/Open", .Value = "", .Type = "text"}},
         {"ShutterCloseURL", New SettingStr With {.Name = "Shutter Close URL", .DefaultVal = "http://192.168.1.10/Close", .Value = "", .Type = "text"}},
-        {"AuthRequred", New SettingStr With {.Name = "Authentication Required", .DefaultVal = "False", .Value = "False", .Type = "checkbox"}},
+        {"AuthRequired", New SettingStr With {.Name = "Authentication Required", .DefaultVal = "False", .Value = "False", .Type = "checkbox"}},
         {"AuthUsername", New SettingStr With {.Name = "Username", .DefaultVal = "", .Value = "", .Type = "text"}},
         {"AuthPassword", New SettingStr With {.Name = "Password", .DefaultVal = "", .Value = "", .Type = "password"}}
     }

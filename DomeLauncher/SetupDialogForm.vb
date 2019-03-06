@@ -9,16 +9,16 @@ Public Class SetupDialogForm
     Private Sub OK_Button_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OK_Button.Click ' OK button event handler
         ' Persist new values of user settings to the ASCOM profile
         ' Update the state variables with results from the dialogue
-        Dome.ShutterOpenURL = txtShutterOpenURL.Text
-        Dome.ShutterCloseURL = txtShutterCloseURL.Text
-        Dome.traceState = chkTrace.Checked
-        Dome.AuthRequired = AuthRequired.Checked
+        Dome.allSettings("ShutterOpenURL").Value = txtShutterOpenURL.Text
+        Dome.allSettings("ShutterCloseURL").Value = txtShutterCloseURL.Text
+        Dome.allSettings("traceState").Value = chkTrace.Checked.ToString()
+        Dome.allSettings("AuthRequired").Value = AuthRequired.Checked.ToString()
         If AuthRequired.Checked Then
-            Dome.URLUsername = Username.Text
-            Dome.URLPassword = Password.Text
+            Dome.allSettings("AuthUsername").Value = Username.Text
+            Dome.allSettings("AuthPassword").Value = Password.Text
         Else
-            Dome.URLUsername = ""
-            Dome.URLPassword = ""
+            Dome.allSettings("AuthUsername").Value = ""
+            Dome.allSettings("AuthPassword").Value = ""
         End If
         Me.DialogResult = System.Windows.Forms.DialogResult.OK
         Me.Close()
@@ -48,12 +48,12 @@ Public Class SetupDialogForm
     End Sub
 
     Private Sub InitUI()
-        chkTrace.Checked = Dome.traceState
-        txtShutterOpenURL.Text = Dome.ShutterOpenURL
-        txtShutterCloseURL.Text = Dome.ShutterCloseURL
-        AuthRequired.Checked = Dome.AuthRequired
-        Username.Text = Dome.URLUsername
-        Password.Text = Dome.URLPassword
+        chkTrace.Checked = Convert.ToBoolean(Dome.allSettings("traceState").Value)
+        txtShutterOpenURL.Text = Dome.allSettings("ShutterOpenURL").Value
+        txtShutterCloseURL.Text = Dome.allSettings("ShutterCloseURL").Value
+        AuthRequired.Checked = Convert.ToBoolean(Dome.allSettings("AuthRequired").Value)
+        Username.Text = Dome.allSettings("AuthUsername").Value
+        Password.Text = Dome.allSettings("AuthPassword").Value
     End Sub
 
     Private Sub AuthRequired_CheckedChanged(sender As Object, e As EventArgs) Handles AuthRequired.CheckedChanged
